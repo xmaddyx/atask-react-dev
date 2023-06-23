@@ -13,58 +13,77 @@ import {
   CardContent,
   FormControl,
   OutlinedInput,
+  CircularProgress,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import StarIcon from "@mui/icons-material/Star";
 import { Octokit } from "octokit";
 
-interface UserDetails {
-  avatar_url: string;
-  events_url: string;
-  followers_url: string;
-  following_url: string;
-  gists_url: string;
-  gravatar_id: any;
-  html_url: string;
+interface Iusers {
   id: number;
   login: string;
-  node_id: string;
-  organizations_url: string;
-  received_events_url: string;
-  repos_url: string;
-  score: number;
-  site_admin: boolean;
-  starred_url: string;
-  subscriptions_url: string;
-  type: string;
-  url: string;
+}
+
+interface Irepos {
+  id: number;
+  name: string;
+  description: string | null;
+  stargazers_count: number;
 }
 
 function SearchUser() {
-  const [users, setUsers] = React.useState<UserDetails[] | []>([]);
+  const [expanded, setExpanded] = useState<string | false>(false);
+  const [users, setUsers] = useState<Iusers[] | []>([]);
+  const [repos, setRepos] = useState<Irepos[] | []>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [userLoading, setUserLoading] = useState(false);
+  const [repoLoading, setRepoLoading] = useState(false);
   const octokit = new Octokit({
     auth: process.env.REACT_APP_GITHUB_TOKEN,
   });
 
   const getUsers = async () => {
+    setUserLoading(true);
     setUsers([]);
 
     try {
       let result = await octokit.request("GET /search/users", {
         q: searchTerm,
+        per_page: 5,
         headers: {
           "X-GitHub-Api-Version": "2022-11-28",
         },
       });
+
       setUsers(result.data.items);
-      console.log(result.data.items);
     } catch (error: any) {
       console.log(error.response);
+    } finally {
+      setUserLoading(false);
     }
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const getRepos = async (user: string) => {
+    setRepoLoading(true);
+    setRepos([]);
+
+    try {
+      let result = await octokit.request("GET /search/repositories", {
+        q: `user:${user}`,
+        per_page: 100,
+        headers: {
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+      });
+      setRepos(result.data.items);
+    } catch (error: any) {
+      console.log(error.response);
+    } finally {
+      setRepoLoading(false);
+    }
+  };
+
+  const searchHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
@@ -73,6 +92,16 @@ function SearchUser() {
 
     getUsers();
   };
+
+  const expandedHandler =
+    (panel: string, user: string) =>
+    (event: React.SyntheticEvent, isExpanded: boolean) => {
+      if (isExpanded) {
+        getRepos(user);
+      }
+
+      setExpanded(isExpanded ? panel : false);
+    };
 
   return (
     <>
@@ -85,10 +114,12 @@ function SearchUser() {
                 <OutlinedInput
                   name="user"
                   size="small"
+                  required
                   placeholder="Enter username"
                   value={searchTerm}
-                  onChange={handleChange}
+                  onChange={searchHandler}
                   autoComplete="off"
+                  sx={{backgroundColor: "#f5f5f5"}}
                 />
               </FormControl>
               <Button type="submit" variant="contained" fullWidth>
@@ -97,37 +128,61 @@ function SearchUser() {
               {searchTerm && (
                 <Typography>Showing users for "{searchTerm}"</Typography>
               )}
-              {users?.map((item) => (
-              <Accordion elevation={0} disableGutters>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  sx={{ backgroundColor: "#CCCCCC" }}
+              {userLoading && (
+                <Box display="flex" justifyContent="center">
+                  <CircularProgress />
+                </Box>
+              )}
+              {users?.map((user) => (
+                <Accordion
+                  elevation={0}
+                  disableGutters
+                  key={user.id}
+                  expanded={expanded === `panel${user.id}`}
+                  onChange={expandedHandler(`panel${user.id}`, user.login)}
                 >
-                  <Typography>{item.login}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Card variant="outlined" sx={{ marginLeft: 2 }}>
-                    <CardContent>
-                      <Box display="flex" justifyContent="space-between">
-                        <Typography variant="h6" fontWeight={700}>
-                          Repository title
-                        </Typography>
-                        <Box
-                          display="flex"
-                          flexDirection="row"
-                          alignItems="center"
-                        >
-                          <Typography sx={{ paddingRight: 1, fontWeight: 700 }}>
-                            12
-                          </Typography>
-                          <StarIcon />
-                        </Box>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{ backgroundColor: "#f5f5f5" }}
+                  >
+                    <Typography>{user.login}</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ paddingTop: 2, paddingRight: 0 }}>
+                    {repoLoading && (
+                      <Box display="flex" justifyContent="center">
+                        <CircularProgress />
                       </Box>
-                      <Typography>Repository description</Typography>
-                    </CardContent>
-                  </Card>
-                </AccordionDetails>
-              </Accordion>
+                    )}
+                    {repos?.map((repo) => (
+                      <Card
+                        variant="outlined"
+                        sx={{ marginLeft: 2, marginBottom: 2, backgroundColor: "#e5e5e5" }}
+                        key={repo.id}
+                      >
+                        <CardContent>
+                          <Box display="flex" justifyContent="space-between">
+                            <Typography variant="h6" fontWeight={700}>
+                              {repo.name}
+                            </Typography>
+                            <Box
+                              display="flex"
+                              flexDirection="row"
+                              alignItems="center"
+                            >
+                              <Typography
+                                sx={{ paddingRight: 1, fontWeight: 700 }}
+                              >
+                                {repo.stargazers_count}
+                              </Typography>
+                              <StarIcon />
+                            </Box>
+                          </Box>
+                          <Typography>{repo.description}</Typography>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </AccordionDetails>
+                </Accordion>
               ))}
             </Stack>
           </form>
