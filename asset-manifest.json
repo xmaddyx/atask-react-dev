@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "https://xmaddyx.github.io/atask-react-dev/static/css/main.073c9b0a.css",
-    "main.js": "https://xmaddyx.github.io/atask-react-dev/static/js/main.1b801a5d.js",
+    "main.js": "https://xmaddyx.github.io/atask-react-dev/static/js/main.ec0a74bd.js",
     "static/js/787.9f93ee65.chunk.js": "https://xmaddyx.github.io/atask-react-dev/static/js/787.9f93ee65.chunk.js",
     "index.html": "https://xmaddyx.github.io/atask-react-dev/index.html",
     "main.073c9b0a.css.map": "https://xmaddyx.github.io/atask-react-dev/static/css/main.073c9b0a.css.map",
-    "main.1b801a5d.js.map": "https://xmaddyx.github.io/atask-react-dev/static/js/main.1b801a5d.js.map",
+    "main.ec0a74bd.js.map": "https://xmaddyx.github.io/atask-react-dev/static/js/main.ec0a74bd.js.map",
     "787.9f93ee65.chunk.js.map": "https://xmaddyx.github.io/atask-react-dev/static/js/787.9f93ee65.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.073c9b0a.css",
-    "static/js/main.1b801a5d.js"
+    "static/js/main.ec0a74bd.js"
   ]
 }
