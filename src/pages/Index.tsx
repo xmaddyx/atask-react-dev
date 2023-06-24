@@ -37,12 +37,15 @@ function SearchUser() {
   const [repos, setRepos] = useState<Irepos[] | []>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [userLoading, setUserLoading] = useState(false);
+  const [userError, setUserError] = React.useState("");
   const [repoLoading, setRepoLoading] = useState(false);
+  const [repoError, setRepoError] = React.useState("");
   const octokit = new Octokit({
     auth: process.env.REACT_APP_GITHUB_TOKEN,
   });
 
   const getUsers = async () => {
+    setUserError("");
     setUserLoading(true);
     setUsers([]);
 
@@ -55,8 +58,15 @@ function SearchUser() {
         },
       });
 
-      setUsers(result.data.items);
+      if (result.data.items.length > 0) {
+        setUsers(result.data.items);
+      } else {
+        setUserError(
+          `No search result for "${searchTerm}". Please try a different search`
+        );
+      }
     } catch (error: any) {
+      setUserError(error.response.data.message);
       console.log(error.response);
     } finally {
       setUserLoading(false);
@@ -64,20 +74,26 @@ function SearchUser() {
   };
 
   const getRepos = async (user: string) => {
+    setRepoError("");
     setRepoLoading(true);
     setRepos([]);
 
     try {
       let result = await octokit.request("GET /search/repositories", {
         q: `user:${user}`,
-        per_page: 100,
+        per_page: 5,
         headers: {
           "X-GitHub-Api-Version": "2022-11-28",
         },
       });
-      setRepos(result.data.items);
+
+      if (result.data.items.length > 0) {
+        setRepos(result.data.items);
+      } else {
+        setRepoError("No repositories found");
+      }
     } catch (error: any) {
-      console.log(error.response);
+      setRepoError(error.response.data.errors[0].message);
     } finally {
       setRepoLoading(false);
     }
@@ -107,7 +123,7 @@ function SearchUser() {
     <>
       <CssBaseline />
       <Container maxWidth="sm">
-        <Box alignContent="center" mt={4}>
+        <Box alignContent="center" marginTop={4}>
           <form onSubmit={submitForm}>
             <Stack direction="column" spacing={2}>
               <FormControl fullWidth>
@@ -119,15 +135,16 @@ function SearchUser() {
                   value={searchTerm}
                   onChange={searchHandler}
                   autoComplete="off"
-                  sx={{backgroundColor: "#f5f5f5"}}
+                  sx={{ backgroundColor: "#f5f5f5" }}
                 />
               </FormControl>
               <Button type="submit" variant="contained" fullWidth>
                 Search
               </Button>
-              {searchTerm && (
+              {!userError && searchTerm && (
                 <Typography>Showing users for "{searchTerm}"</Typography>
               )}
+              {userError && <Typography>{userError}</Typography>}
               {userLoading && (
                 <Box display="flex" justifyContent="center">
                   <CircularProgress />
@@ -147,16 +164,36 @@ function SearchUser() {
                   >
                     <Typography>{user.login}</Typography>
                   </AccordionSummary>
-                  <AccordionDetails sx={{ paddingTop: 2, paddingRight: 0 }}>
+                  <AccordionDetails
+                    sx={{ paddingTop: 2, paddingRight: 0, paddingBottom: 2 }}
+                  >
                     {repoLoading && (
-                      <Box display="flex" justifyContent="center">
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        paddingRight={2}
+                      >
                         <CircularProgress />
+                      </Box>
+                    )}
+                    {repoError && (
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        textAlign="center"
+                        paddingRight={2}
+                      >
+                        <Typography>{repoError}</Typography>
                       </Box>
                     )}
                     {repos?.map((repo) => (
                       <Card
                         variant="outlined"
-                        sx={{ marginLeft: 2, marginBottom: 2, backgroundColor: "#e5e5e5" }}
+                        sx={{
+                          marginLeft: 2,
+                          marginBottom: 2,
+                          backgroundColor: "#e5e5e5",
+                        }}
                         key={repo.id}
                       >
                         <CardContent>
