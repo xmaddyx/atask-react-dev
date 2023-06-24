@@ -1,14 +1,14 @@
 import './App.css';
 import IndexPage from "./pages/Index"
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route, HashRouter } from 'react-router-dom';
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path={"/"} element={<IndexPage />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 

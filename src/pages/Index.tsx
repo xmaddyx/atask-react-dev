@@ -67,7 +67,6 @@ function SearchUser() {
       }
     } catch (error: any) {
       setUserError(error.response.data.message);
-      console.log(error.response);
     } finally {
       setUserLoading(false);
     }
