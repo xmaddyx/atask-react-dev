@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/atask-react-dev/static/css/main.073c9b0a.css",
-    "main.js": "/atask-react-dev/static/js/main.974e93b6.js",
-    "static/js/787.9f93ee65.chunk.js": "/atask-react-dev/static/js/787.9f93ee65.chunk.js",
-    "index.html": "/atask-react-dev/index.html",
-    "main.073c9b0a.css.map": "/atask-react-dev/static/css/main.073c9b0a.css.map",
-    "main.974e93b6.js.map": "/atask-react-dev/static/js/main.974e93b6.js.map",
-    "787.9f93ee65.chunk.js.map": "/atask-react-dev/static/js/787.9f93ee65.chunk.js.map"
+    "main.css": "/static/css/main.073c9b0a.css",
+    "main.js": "/static/js/main.04ff9fa4.js",
+    "static/js/787.9f93ee65.chunk.js": "/static/js/787.9f93ee65.chunk.js",
+    "index.html": "/index.html",
+    "main.073c9b0a.css.map": "/static/css/main.073c9b0a.css.map",
+    "main.04ff9fa4.js.map": "/static/js/main.04ff9fa4.js.map",
+    "787.9f93ee65.chunk.js.map": "/static/js/787.9f93ee65.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.073c9b0a.css",
-    "static/js/main.974e93b6.js"
+    "static/js/main.04ff9fa4.js"
   ]
 }
