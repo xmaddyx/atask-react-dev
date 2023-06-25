@@ -40,9 +40,7 @@ function SearchUser() {
   const [userError, setUserError] = React.useState("");
   const [repoLoading, setRepoLoading] = useState(false);
   const [repoError, setRepoError] = React.useState("");
-  const octokit = new Octokit({
-    auth: process.env.REACT_APP_GITHUB_TOKEN,
-  });
+  const octokit = new Octokit();
 
   const getUsers = async () => {
     setUserError("");
@@ -54,6 +52,7 @@ function SearchUser() {
         q: searchTerm,
         per_page: 5,
         headers: {
+          "accept": "application/vnd.github+json",
           "X-GitHub-Api-Version": "2022-11-28",
         },
       });
@@ -80,8 +79,9 @@ function SearchUser() {
     try {
       let result = await octokit.request("GET /search/repositories", {
         q: `user:${user}`,
-        per_page: 5,
+        per_page: 100,
         headers: {
+          "accept": "application/vnd.github+json",
           "X-GitHub-Api-Version": "2022-11-28",
         },
       });
