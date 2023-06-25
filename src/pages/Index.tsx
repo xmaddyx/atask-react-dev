@@ -14,6 +14,8 @@ import {
   FormControl,
   OutlinedInput,
   CircularProgress,
+  AppBar,
+  Toolbar,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import StarIcon from "@mui/icons-material/Star";
@@ -122,7 +124,12 @@ function SearchUser() {
     <>
       <CssBaseline />
       <Container maxWidth="sm">
-        <Box alignContent="center" marginTop={4}>
+        <AppBar>
+          <Toolbar sx={{justifyContent: "center"}}>
+            <Typography>GitHub Repositories Explorer</Typography>
+          </Toolbar>
+        </AppBar>
+        <Box alignContent="center" marginTop={10}>
           <form onSubmit={submitForm}>
             <Stack direction="column" spacing={2}>
               <FormControl fullWidth>
